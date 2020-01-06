@@ -9,18 +9,23 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("LoadingScreen");
+        LoadSceneAsync("Loading");
         Destroy(MenuMusicManager.MenuMusic);
+    }
+
+    public void LoadRoadmap()
+    {
+        LoadSceneAsync("Roadmap");
     }
 
     public void LoadOptions()
     {
-        SceneManager.LoadScene("Options");
+        LoadSceneAsync("Options");
     }
 
     public void LoadCredits()
     {
-        SceneManager.LoadScene("Credits");
+        LoadSceneAsync("Credits");
     }
 
     public void QuitGame()
@@ -32,16 +37,23 @@ public class MainMenu : MonoBehaviour
 #endif
     }
 
-    // Unity's LoadSceneAsync does NOT work and its a KNOWN bug. Try to avoid using this method for now.
+    private void LoadSceneAsync(string scene)
+    {
+        StartCoroutine(LoadAsynchronously(scene));
+    }
+
     private IEnumerator LoadAsynchronously(string scene)
     {
-        AsyncOperation operation = SceneManager.LoadSceneAsync(scene);
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+        asyncOperation.allowSceneActivation = false;
 
-
-        while (!operation.isDone)
+        while (!asyncOperation.isDone)
         {
-            float progress = Mathf.Clamp01(operation.progress / .9f);
-            //slider.value = progress;
+            if (asyncOperation.progress >= 0.9f)
+            {
+                asyncOperation.allowSceneActivation = true;
+            }
+
             yield return null;
         }
     }

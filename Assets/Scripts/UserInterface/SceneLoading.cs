@@ -1,33 +1,44 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneLoading : MonoBehaviour
 {
+    public GameObject Background;
+    public GameObject ProgressBarFill;
+
     public Sprite[] backgrounds;
-    private Sprite randomBackground;
-    [SerializeField]
-    private Image _progressBar;
-    // Start is called before the first frame update
-    void Start()
+
+    private Image progressBarFillImage;
+
+    public void Start()
     {
-        randomBackground = backgrounds[Random.Range(0, backgrounds.Length)];
-        GetComponent<Image>().sprite = randomBackground;
-        StartCoroutine(LoadAsyncOperation());
+        progressBarFillImage = ProgressBarFill.GetComponent<Image>();
+        SetRandomBackground();
+        StartCoroutine(LoadScene("Main"));
     }
 
-    IEnumerator LoadAsyncOperation()
+    private void SetRandomBackground()
     {
-        yield return new WaitForSeconds(5);
-        AsyncOperation gameLevel = SceneManager.LoadSceneAsync(3);
-        while (gameLevel.progress < 1)
+        Background.GetComponent<Image>().sprite = backgrounds[Random.Range(0, backgrounds.Length)];
+    }
+
+    private IEnumerator LoadScene(string scene)
+    {
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(scene);
+        asyncOperation.allowSceneActivation = false;
+
+        while (!asyncOperation.isDone)
         {
-            _progressBar.fillAmount = gameLevel.progress;
+            progressBarFillImage.fillAmount = asyncOperation.progress;
 
-            yield return new WaitForEndOfFrame();
+            if (asyncOperation.progress >= 0.9f)
+            {
+                asyncOperation.allowSceneActivation = true;
+            }
+
+            yield return null;
         }
-
     }
 }

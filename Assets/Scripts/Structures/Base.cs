@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,7 +32,6 @@ public class Base : Structure
     public void DepositResource(Material type, int amount)
     {
         Resources[type] += amount;
-        GameObject.Find(type.Name.ToLower().ToTitleCase()).GetComponent<Text>().text = "" + type.Name.ToLower().ToTitleCase() + ": " + Resources[type];
     }
 
     public void Upgrade()

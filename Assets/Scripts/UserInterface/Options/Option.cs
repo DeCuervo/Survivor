@@ -8,12 +8,14 @@ public class Option
     public Selectable selectable;
     public Color32 color;
 
-    public Option(Selectable selectable, Color32 color)
+    public Option(string name)
     {
-        this.selectable = selectable;
-        this.color = color;
+        this.selectable = GameObject.Find(name).GetComponent<Selectable>();
+        this.color = new Color32(255, 255, 255, 255); // Default Color
 
+        this.selectable.gameObject.SetActive(false); // Prevents visual color flash change
         this.Colorize();
+        this.selectable.gameObject.SetActive(true);
     }
 
     public virtual void Colorize()
